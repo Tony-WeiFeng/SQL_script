@@ -14,6 +14,7 @@ FROM
         LEFT JOIN
     renderjob rj ON ji.jobid = rj.id
         LEFT JOIN
+    #Get total job numbers for different quality on each day.
     (SELECT 
         DATE(FROM_UNIXTIME(rj.created / 1000)) AS render_request_date,
             ji.quality AS quality,
@@ -26,6 +27,7 @@ FROM
     GROUP BY ji.quality , render_request_date) AS total_jobs ON total_jobs.render_request_date = DATE(ji.endTime)
         AND total_jobs.quality = ji.quality
         LEFT JOIN
+    #Get successful job numbers for different quality on each day.
     (SELECT 
         DATE(FROM_UNIXTIME(rj.created / 1000)) AS render_request_date,
             ji.quality AS quality,
