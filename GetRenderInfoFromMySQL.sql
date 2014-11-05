@@ -37,7 +37,9 @@ FROM
     RIGHT JOIN jobinfo ji ON rj.id = ji.jobid
     WHERE
         rj.created / 1000 BETWEEN UNIX_TIMESTAMP('2014-10-30') AND UNIX_TIMESTAMP('2014-11-02')
-            AND rj.processStatus IN (2 , 5)
+            #Change the condition of processed successful
+            #AND rj.processStatus IN (2 , 5)
+            AND rj.imgS3Url is not null
     GROUP BY ji.quality , render_request_date) AS success_jobs ON success_jobs.render_request_date = DATE(ji.endTime)
         AND success_jobs.quality = ji.quality
 WHERE
