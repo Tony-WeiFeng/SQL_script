@@ -14,7 +14,6 @@ FROM
         LEFT JOIN
     renderjob rj ON ji.jobid = rj.id
         LEFT JOIN
-    #Get total job numbers for different quality on each day.
     (SELECT 
         DATE(FROM_UNIXTIME(rj.created / 1000)) AS render_request_date,
             ji.quality AS quality,
@@ -23,11 +22,10 @@ FROM
         renderjob AS rj
     RIGHT JOIN jobinfo ji ON rj.id = ji.jobid
     WHERE
-        rj.created / 1000 BETWEEN UNIX_TIMESTAMP('2014-10-31') AND UNIX_TIMESTAMP('2014-11-02')
+        rj.created / 1000 BETWEEN UNIX_TIMESTAMP('2014-11-04') AND UNIX_TIMESTAMP('2014-11-06')
     GROUP BY ji.quality , render_request_date) AS total_jobs ON total_jobs.render_request_date = DATE(ji.endTime)
         AND total_jobs.quality = ji.quality
         LEFT JOIN
-    #Get successful job numbers for different quality on each day.
     (SELECT 
         DATE(FROM_UNIXTIME(rj.created / 1000)) AS render_request_date,
             ji.quality AS quality,
@@ -36,13 +34,12 @@ FROM
         renderjob AS rj
     RIGHT JOIN jobinfo ji ON rj.id = ji.jobid
     WHERE
-        rj.created / 1000 BETWEEN UNIX_TIMESTAMP('2014-10-30') AND UNIX_TIMESTAMP('2014-11-02')
-            #Change the condition of processed successful
-            #AND rj.processStatus IN (2 , 5)
-            AND rj.imgS3Url is not null
+        rj.created / 1000 BETWEEN UNIX_TIMESTAMP('2014-11-04') AND UNIX_TIMESTAMP('2014-11-06')
+            AND rj.imgS3Url IS NOT NULL
     GROUP BY ji.quality , render_request_date) AS success_jobs ON success_jobs.render_request_date = DATE(ji.endTime)
         AND success_jobs.quality = ji.quality
 WHERE
-    DATE(ji.endTime) > '2014-10-30'
+    DATE(ji.endTime) >= '2014-11-04'
+        AND DATE(ji.endTime) < '2014-11-06'
 GROUP BY render_date , quality
 ORDER BY quality , render_date DESC
